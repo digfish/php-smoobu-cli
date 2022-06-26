@@ -13,6 +13,7 @@ final class SmoobuClientTest extends TestCase
     static $last_guest_id = 0;
     static $last_booking_id = 0;
     static $faker;
+    static $apartments;
 
     protected function setUp(): void {
         //parent::setUp();
@@ -33,6 +34,15 @@ final class SmoobuClientTest extends TestCase
         $this->assertTrue($userinfo->id == $_ENV['SMOOBU_TEST_USER_ID']);
     }
 
+    public function testListApartments()
+    {
+        $apartments = $this->client->list_apartments();
+        self::$apartments = $apartments;
+        #var_dump($apartments);
+        $this->assertTrue(count($apartments) > 0);
+    }
+
+
     public function testListGuests() {
         $guests = $this->client->list_guests();
         self::$last_guest_id = $guests[0]->id;
@@ -45,12 +55,22 @@ final class SmoobuClientTest extends TestCase
     }
 
     function testAvailability() {
-        $availability = $this->client->availability('2020-01-01','2020-01-02',[1277051]);
-#        var_dump($availability);
-        $this->assertEquals($availability->availableApartments[0], 1277051);
+        $start = date('Y-m-d',strtotime('+1 year 1 day'));
+        $end = date('Y-m-d',strtotime('+1 year 5 days'));
+        $availability = $this->client->availability($start,$end,[]);
+        sort($availability->availableApartments);
+        $apartment_ids = array_map(function ($e) {
+            return $e->id;
+        }, self::$apartments);
+        sort($apartment_ids);
+         $this->assertEquals(
+            $availability->availableApartments,
+            $apartment_ids
+         );
     }
 
     function testListBookings() {
+        $apartment_id = self::$apartments[rand(0,count(self::$apartments)-1)]->id;
         $query_args = [
              'created_from' => '2022-01-01',
              'created_to' => '2022-12-31',
@@ -80,17 +100,18 @@ final class SmoobuClientTest extends TestCase
         $departure_time = $arrival_time + 60*60*24*2;
         $arrival_date = date('Y-m-d',$arrival_time);
         $departure_date = date('Y-m-d',$departure_time);
-        print("$arrival_date => $departure_date");
+        #print("$arrival_date => $departure_date\n");
         $new_booking->arrivalDate = $arrival_date;
         $new_booking->departureDate = $departure_date;
         $new_booking->apartmentId = 1277051;
         $new_booking->channelId = 70;
-        $new_booking->firstName = 'Cristiano';
-        $new_booking->lastName = 'Ronaldo';
-        $new_booking->email = 'cr7@munited.co.uk';
+        
+        $new_booking->firstName = self::$faker->firstName();
+        $new_booking->lastName = self::$faker->lastName();
+        $new_booking->email = self::$faker->email();
 
         $created_booking = $this->client->create_booking($new_booking);
-        var_dump($created_booking);
+        #var_dump($created_booking);
         $this->assertTrue(isset($created_booking->id));
         self::$last_booking_id = $created_booking->id;
     }
@@ -116,11 +137,6 @@ final class SmoobuClientTest extends TestCase
     }
 
 
-    public function testListApartments() {
-        $apartments = $this->client->list_apartments();
-        
-        $this->assertTrue(count($apartments) > 0);
-    }
 
     function testGetApartment() {
         $apartment = $this->client->get_apartment(1277051);
