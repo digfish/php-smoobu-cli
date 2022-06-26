@@ -7,10 +7,46 @@ use Dotenv\Dotenv;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 
+class Booking {
+    var $arrivalDate;
+    var $departureDate;
+    var $channelId;
+    var $apartmentId;
+    var $arrivalTime;
+    var $departureTime;
+    var $firstName;
+    var $lastName;
+    var $email;
+    var $phone;
+    var $notice;
+    var $adults;
+    var $children;
+    var $price;
+    var $priceStatus;
+    var $deposit;
+    var $depositStatus;
+    var $language;
+    var $priceElements = [];
+
+    public function __construct($fields = []) {
+        if (is_object($fields)) {
+            $fields = (array) $fields;
+        }
+        foreach ($fields as $key => $value) {
+            $this->{$key} = $value;
+        }
+    }
+}
+
+
+
 class SmoobuClient {
+
+    
 
     private $client;
 
+       
     function __construct(){
         $this->client = new Client([
             'base_uri' => 'https://login.smoobu.com/api/',
@@ -20,21 +56,20 @@ class SmoobuClient {
         $dotenv->load(); 
     }
 
-    protected function _invoke($uri,$http_met='GET',$data=[]) {
+    protected function _invoke($uri,$http_met='GET',$data=[],$params=[],$headers=[]) {
         $resp = null;
+        $headers['Api-Key'] = $_ENV['SMOOBU_TEST_API_KEY'];
         try {
             $resp = $this->client->request($http_met,$uri,[
-                'headers' => [
-                    'Api-Key'=> $_ENV['SMOOBU_TEST_API_KEY'],
-                    
-                ],
-                'body' => json_encode($data)
+                'headers' => $headers,
+                'body' => json_encode($data),
+                'query' => $params,
             ]);
         } catch (ClientException $e) {
             echo ($e->getMessage());
-            return $resp;
-        } 
-        
+            $resp = $e->getResponse();
+        }
+        $this->lastStatus = $resp->getStatusCode(); 
         return json_decode($resp->getBody()->getContents());
     } 
 
@@ -43,13 +78,17 @@ class SmoobuClient {
         return $this->_invoke('me','GET');
     }
 
-    function get_guests() {
+    function list_guests() {
         $response = $this->_invoke('guests','GET');
         if ($response->totalItems > 0) {
             return $response->guests;
         } else {
             return [];
         }
+    }
+
+    function get_guest($id) {
+        return $this->_invoke('guests/'.$id,'GET');
     }
 
     function availability($arrival_date,$depature_date,$apartments) {
@@ -60,10 +99,41 @@ class SmoobuClient {
             "apartments" => $apartments
         ]);
     }
+
+    function list_bookings($query_args=[]) {
+        $bookings = $this->_invoke('reservations','GET',[],$query_args);
+        return $bookings->bookings;
+    }
+
+    function get_booking($id) {
+        return $this->_invoke('reservations/'.$id,'GET');
+    }
+
+    function create_booking(Booking $new_booking) {
+        $response = $this->_invoke('reservations','POST',$new_booking);
+        if (!isset($response->id)) {
+            return false;
+        } else {
+            return $response;
+        }
+    }
+
+    function update_booking($booking_id,Booking $booking_to_update) {
+        return $this->_invoke('reservations/'.$booking_id,'PUT',$booking_to_update);
+    }
+
+    function cancel_booking($booking_id) {
+        return $this->_invoke('reservations/'.$booking_id,'DELETE');
+    }
+
+    function list_apartments() {
+        $apartments = $this->_invoke('apartments','GET');
+        return $apartments->apartments;
+    }
+
+    function get_apartment($apartment_id) {
+        return $this->_invoke('apartments/'.$apartment_id,'GET');
+    }
 }
 
-// $smoobu = new SmoobuClient();
-// var_dump($smoobu->current_user());
-// var_dump($smoobu->get_guests());
-// var_dump($smoobu->availability('2022-01-08','2022-01-10',[1277051]));
 
