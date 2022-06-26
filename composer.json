@@ -1,0 +1,10 @@
+{
+    "require": {
+        "guzzlehttp/guzzle": "^7.4",
+        "vlucas/phpdotenv": "^5.4"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.19",
+        "phpunit/phpunit": "^9.5"
+    }
+}
