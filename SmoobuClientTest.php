@@ -1,10 +1,10 @@
 <?php
 require "vendor/autoload.php";
-include_once "smoobu_client.php";
 
 use Dotenv\Dotenv;
-use PHPUnit\Framework\TestCase;
-
+use \PHPUnit\Framework\TestCase;
+use digfish\smoobuclient\SmoobuClient;
+use digfish\smoobuclient\elements\SmoobuBooking as Booking;
 
 final class SmoobuClientTest extends TestCase
 {
@@ -134,6 +134,23 @@ final class SmoobuClientTest extends TestCase
         $sucess = $this->client->cancel_booking(self::$last_booking_id);
 
         $this->assertTrue($sucess->success);
+    }
+
+    function testCancelAllBookings() {
+        $apartments = self::$apartments;
+        $counter = 0;
+        foreach ($apartments as $apartment) {
+            # code...
+            $bookings = $this->client->list_bookings(['apartmentId' => $apartment->id]);
+            foreach ($bookings as $booking) {
+                # code...
+                $this->client->cancel_booking($booking->id);
+            }
+            $bookings = $this->client->list_bookings(['apartmentId' => $apartment->id]);
+            $this->assertTrue(count($bookings) == 0);
+            $counter += count($bookings);
+        }
+        $this->assertTrue($counter == 0);
     }
 
 

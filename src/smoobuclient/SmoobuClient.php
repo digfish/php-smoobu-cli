@@ -1,42 +1,14 @@
 <?php 
 
+namespace digfish\smoobuclient;
+
 require_once "vendor/autoload.php";
 
 use GuzzleHttp\Client;
 use Dotenv\Dotenv;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 
-class Booking {
-    var $arrivalDate;
-    var $departureDate;
-    var $channelId;
-    var $apartmentId;
-    var $arrivalTime;
-    var $departureTime;
-    var $firstName;
-    var $lastName;
-    var $email;
-    var $phone;
-    var $notice;
-    var $adults;
-    var $children;
-    var $price;
-    var $priceStatus;
-    var $deposit;
-    var $depositStatus;
-    var $language;
-    var $priceElements = [];
-
-    public function __construct($fields = []) {
-        if (is_object($fields)) {
-            $fields = (array) $fields;
-        }
-        foreach ($fields as $key => $value) {
-            $this->{$key} = $value;
-        }
-    }
-}
+use digfish\smoobuclient\elements\SmoobuBooking;
 
 
 
@@ -52,7 +24,7 @@ class SmoobuClient {
             'base_uri' => 'https://login.smoobu.com/api/',
             'timeout'  => 60.0,
         ]);
-        $dotenv = Dotenv::createImmutable(__DIR__);
+        $dotenv = Dotenv::createImmutable('.');
         $dotenv->load(); 
     }
 
@@ -109,7 +81,7 @@ class SmoobuClient {
         return $this->_invoke('reservations/'.$id,'GET');
     }
 
-    function create_booking(Booking $new_booking) {
+    function create_booking(SmoobuBooking $new_booking) {
         $response = $this->_invoke('reservations','POST',$new_booking);
         if (!isset($response->id)) {
             return false;
@@ -118,7 +90,7 @@ class SmoobuClient {
         }
     }
 
-    function update_booking($booking_id,Booking $booking_to_update) {
+    function update_booking($booking_id,SmoobuBooking $booking_to_update) {
         return $this->_invoke('reservations/'.$booking_id,'PUT',$booking_to_update);
     }
 
