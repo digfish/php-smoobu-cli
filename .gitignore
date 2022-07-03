@@ -2,3 +2,6 @@ vendor/
 .vscode/
 .env
 composer.lock
+json/
+.idea/
+_gsdata_/
