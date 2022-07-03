@@ -1,6 +1,6 @@
 ### SMOOBU API CLIENT IN PHP ###
 
-This is a implementation of the [Smoobu](https://smoobu.com), an property management system. Their API allow the creation of bookings, updating it, list and create the guests that made the bookings, send messages to the clients. Allows synchronization of prices between different HMS systems, etc. Their complete api is [described here](https://docs.smoobu.com/).
+This is a implementation in PHP of the [Smoobu](https://smoobu.com) API, an property management system. Their API allow the creation of bookings, updating it, list and create the guests that made the bookings, send messages to the clients.  Their complete api is [described here](https://docs.smoobu.com/).
 
 ## What is implemented
 
@@ -14,5 +14,5 @@ This is a implementation of the [Smoobu](https://smoobu.com), an property manage
 |Update Booking    | PUT /reservations/:id                  |
 |Cancel Booking    | DELETE /reservations/:id               |
 |List Apartments   | GET /apartments                        |
-|GET Apartments    | GET /apartments/:id                    |
+|Get Apartment     | GET /apartments/:id                    |
 -------------------------------------------------------------
