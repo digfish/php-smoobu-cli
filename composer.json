@@ -1,5 +1,8 @@
 {
     "name": "digfish/php-smoobu-cli",
+    "version": "0.1",
+    "description": "Smoobu Property Management System API Client",
+    "license": "Apache",
     "require": {
         "guzzlehttp/guzzle": "^7.4",
         "vlucas/phpdotenv": "^5.4"
