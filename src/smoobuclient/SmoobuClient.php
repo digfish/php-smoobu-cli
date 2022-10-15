@@ -29,9 +29,7 @@ class SmoobuClient {
             $dotenv->load();
             $_ENV['SMOOBU_API_KEY'] = $_ENV['SMOOBU_TEST_API_KEY'];
             $_ENV['SMOOBU_USER_ID'] = $_ENV['SMOOBU_TEST_USER_ID'];
-        } else {
-            require_once "env.php";
-        }
+        } 
     }
 
     protected function _invoke($uri,$http_met='GET',$data=[],$params=[],$headers=[]) {

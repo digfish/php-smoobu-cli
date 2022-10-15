@@ -11,7 +11,7 @@ composer install digfish/php-smoobu-cli
 
 
 ## Environment variables
-The variable `SMOOBU_TEST_API_KEY` should hold the value of your API key. You can set this via a .`env` file or your own code using `putenv` or `$_ENV['SMOOBU_TEST_API_KEY']`. If the application does not find the `.env` file it assumes that you are running on production. When in production, fill the values in `env.php`.
+The variable `SMOOBU_TEST_API_KEY` should hold the value of your API key. You can set this via a .`env` file or your own code using `putenv` or `$_ENV['SMOOBU_TEST_API_KEY']`. If the application does not find the `.env` file it assumes that you are running on production. When in production, set in your code the variables `SMOOBU_API_KEY` and `SMOOBU_USER_ID`.
 
 
 ## What is implemented
