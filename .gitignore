@@ -5,3 +5,4 @@ composer.lock
 json/
 .idea/
 _gsdata_/
+src/smoobuclient/SmoobuClient.php.bak

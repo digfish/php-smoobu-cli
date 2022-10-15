@@ -24,13 +24,19 @@ class SmoobuClient {
             'base_uri' => 'https://login.smoobu.com/api/',
             'timeout'  => 60.0,
         ]);
-        $dotenv = Dotenv::createImmutable('.');
-        $dotenv->load(); 
+        if (file_exists('.env')) {
+            $dotenv = Dotenv::createImmutable('.');
+            $dotenv->load();
+            $_ENV['SMOOBU_API_KEY'] = $_ENV['SMOOBU_TEST_API_KEY'];
+            $_ENV['SMOOBU_USER_ID'] = $_ENV['SMOOBU_TEST_USER_ID'];
+        } else {
+            require_once "env.php";
+        }
     }
 
     protected function _invoke($uri,$http_met='GET',$data=[],$params=[],$headers=[]) {
         $resp = null;
-        $headers['Api-Key'] = $_ENV['SMOOBU_TEST_API_KEY'];
+        $headers['Api-Key'] = $_ENV['SMOOBU_API_KEY'];
         try {
             $resp = $this->client->request($http_met,$uri,[
                 'headers' => $headers,
@@ -65,7 +71,7 @@ class SmoobuClient {
 
     function availability($arrival_date,$depature_date,$apartments) {
         return $this->_invoke('/booking/checkApartmentAvailability','POST',[
-            'customerId' => $_ENV['SMOOBU_TEST_USER_ID'],
+            'customerId' => $_ENV['SMOOBU_USER_ID'],
             'arrivalDate' => $arrival_date,
             'departureDate'=> $depature_date,
             "apartments" => $apartments
